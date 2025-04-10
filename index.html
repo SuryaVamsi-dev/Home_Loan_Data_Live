@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Google Sheet Live Data</title>
+ <style>
+ table {
+ border-collapse: collapse;
+width: 80%;
+ margin: 20px auto;
+ }
+ th, td {
+ padding: 8px 12px;
+ border: 1px solid #ddd;
+ }
+ </style>
+</head>
+<body>
+ <h2 style="text-align:center">Live Google Sheet Data</h2>
+ <div id="table-container"></div>
+<script>
+ const sheetID = '1ABC123DEF456GHI789JKL'; // Replace with your Sheet ID
+ const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
+ fetch(sheetURL)
+ .then(res => res.text())
+ .then(data => {
+ const json = JSON.parse(data.substr(47).slice(0, -2)); // Clean up JSONP response
+ const rows = json.table.rows;
+ let html = '<table><tr>';
+ // Headers
+ json.table.cols.forEach(col => {
+ html += `<th>${col.label}</th>`;
+});
+ html += '</tr>';
+ // Rows
+ rows.forEach(row => {
+ html += '<tr>';
+ row.c.forEach(cell => {
+ html += `<td>${cell ? cell.v : ''}</td>`;
+ });
+ html += '</tr>';
+ });
+ html += '</table>';
+ document.getElementById('table-container').innerHTML = html;
+})
+ .catch(err => console.error('Error loading sheet:', err));
+ </script>
+</body>
+</html>
