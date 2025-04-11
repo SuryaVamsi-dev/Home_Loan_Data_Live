@@ -1,61 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Live Google Sheet Data</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 30px;
+    }
     table {
       border-collapse: collapse;
       width: 90%;
-      margin: 20px auto;
-      font-family: Arial, sans-serif;
+      margin: 30px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     th, td {
-      padding: 8px 12px;
       border: 1px solid #ddd;
+      padding: 12px 15px;
       text-align: center;
     }
     th {
-      background-color: #f2f2f2;
+      background-color: #f4f4f4;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
     }
   </style>
 </head>
 <body>
-  <h2 style="text-align:center">Live Data from Google Sheet</h2>
+  <h2>Live Data from Google Sheet</h2>
   <div id="table-container"></div>
 
   <script>
-    const sheetID = '1EIt7j4B-5V6J8KhFLO-baAzf5ufUVLlVEPee5X4mQNo';
-    const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1mW7wEgDOm6mTfQYg6Me4Sq_BzldhgF3XoSy1-NvebQosaTMgiAp-fk0y0IefXSych7rqxq7NNFek/gviz/tq?tqx=out:json";
 
     fetch(sheetURL)
-      .then(res => res.text())
+      .then(response => response.text())
       .then(data => {
-        const json = JSON.parse(data.substr(47).slice(0, -2)); // clean up Google’s weird JSON
-        const rows = json.table.rows;
+        const json = JSON.parse(data.substring(47).slice(0, -2)); // Clean JSONP
         const cols = json.table.cols;
+        const rows = json.table.rows;
 
-        let html = '<table><tr>';
+        let html = "<table><tr>";
         // Table headers
         cols.forEach(col => {
           html += `<th>${col.label}</th>`;
         });
-        html += '</tr>';
+        html += "</tr>";
 
-        // Table data
+        // Table rows
         rows.forEach(row => {
-          html += '<tr>';
+          html += "<tr>";
           row.c.forEach(cell => {
-            html += `<td>${cell ? cell.v : ''}</td>`;
+            html += `<td>${cell ? cell.v : ""}</td>`;
           });
-          html += '</tr>';
+          html += "</tr>";
         });
 
-        html += '</table>';
-        document.getElementById('table-container').innerHTML = html;
+        html += "</table>";
+        document.getElementById("table-container").innerHTML = html;
       })
-      .catch(err => {
-        console.error('Error loading sheet:', err);
-        document.getElementById('table-container').innerHTML = '<p style="text-align:center;color:red;">Failed to load data. Check console for details.</p>';
+      .catch(error => {
+        console.error("Error loading Google Sheet:", error);
+        document.getElementById("table-container").innerHTML = "<p style='text-align:center; color:red;'>Failed to load data.</p>";
       });
   </script>
 </body>
